@@ -36,12 +36,18 @@ public:
 	virtual ~Human() { cout << "HDestructor:\t" << this << endl; }
 	
 	 // Methods:
-	virtual void print()const
+	virtual  std::ostream& print(std::ostream& os)const
 	{
-		cout << last_name << " " << first_name << " " << age << endl;
+		return os << last_name << " " << first_name << " " << age;
+		//cout << last_name << " " << first_name << " " << age << endl;
 	}
 	
 };
+std::ostream& operator<<(std::ostream& os, const Human& obj)
+{
+	return obj.print(os);// .get_last_name();
+}
+
 #define STUDENT_TAKE_PARAMETERS const std::string& speciality, const std::string& group, double rating, double attendance
 #define STUDENT_GIVE_PARAMETERS speciality,group,rating,attendance
 
@@ -85,10 +91,13 @@ public:
 	~Student() { cout << "SDestructor:\t" << this << endl; }
 
 	//   Methods:
-	void print()const override
+	 std::ostream& print(std::ostream& os)const override
 	{
-		Human::print();
-		cout << speciality << " " << group << " " << rating << " " << attendance << endl;
+		
+		 return Human::print(os)<<" " << speciality << " " << group << " " << rating << " " << attendance;
+		 
+		 /*Human::print();
+		cout << speciality << " " << group << " " << rating << " " << attendance << endl;*/
 	}
 };
 
@@ -116,10 +125,11 @@ public:
 	~Teacher() { cout << "TDestructor:\t" <<this<< endl; }
 
 	//  Methods:
-	void print()const override
+	std::ostream&  print(std::ostream& os)const override
 	{
-		Human::print();
-		cout << speciality << " " << experience << " years" << endl;
+		return Human::print(os)<<" " << speciality << " " << experience << " years";
+		/*Human::print();
+		cout << speciality << " " << experience << " years" << endl;*/
 	}
 
 };
@@ -159,13 +169,32 @@ public:
 	~Graduate() { cout << "GDestructor:\t" << this << endl; }
 
 	// Methods:
-	void print()const override
+	std::ostream& print(std::ostream& os)const override
 	{
-		Student::print();
-		cout << subject <<endl;
+		return Student::print(os)<<" " << subject;
+		/*Student::print();
+		cout << subject <<endl;*/
 	}
 
 };
+
+void Print(Human* group[], const int n)
+{
+	cout << delimiter << endl;
+	for (int i = 0; i < n; i++)
+	{
+		//group[i]->print();
+		cout << *group[i] << endl;
+		cout << delimiter << endl;
+	}
+}
+void Clear(Human* group[], const int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		delete group[i];
+	}
+}
 
 //#define INHERITANCE_1
 //#define INHERITANCE_2
@@ -210,15 +239,16 @@ void main()
 		new Student("Varcetti","Tommy",30,"Theft","Vice",95,98),
 		new Teacher("Diaz","Ricardo",50,"Weapons distribution",20)
 	};
-	for (int i = 0; i <sizeof(group)/sizeof(group[0]); i++)
-	{
-		group[i]->print();
-		//cout << *group[i] << endl;
-		cout << delimiter << endl;
-	}
-	for (int i = 0; i < sizeof(group) / sizeof(group[0]); i++)
-	{
-		delete group[i];
-	}
+	
+	Print(group, sizeof(group) / sizeof(group[0]));
+	Clear(group, sizeof(group) / sizeof(group[0]));
+	//cout << delimiter << endl;
+	//for (int i = 0; i <sizeof(group)/sizeof(group[0]); i++)
+	//{
+	//	//group[i]->print();
+	//	cout << *group[i] << endl;
+	//	cout << delimiter << endl;
+	//}
+	
 	
 }
