@@ -1,5 +1,7 @@
-#include <iostream>
-#include<string>
+﻿#include <iostream>
+#include<fstream>
+#include<string> // объявлен класс std::string
+#include<string.h> // объявлен функции для работы с NULL Terminated Lines
 using namespace std;
 using std::cin;
 using std::cout;
@@ -38,14 +40,26 @@ public:
 	 // Methods:
 	virtual  std::ostream& print(std::ostream& os)const
 	{
+		//os << strchr(typeid(*this).name(),' ') +1 << ":\t";//Оператор typeid(type | value) определяет тип значения на этапе выполнения программы.
+		 // Метод name() возвращает С-string содержащую имя типа
 		return os << last_name << " " << first_name << " " << age;
 		//cout << last_name << " " << first_name << " " << age << endl;
 	}
+	virtual std::ofstream& print(std::ofstream& ofs)const
+	{
+	     ofs << strchr(typeid(*this).name(),' ') +1 << ":";
+		 ofs << last_name << " " << first_name << " " << age;
+			return ofs;
+	}
 	
 };
-std::ostream& operator<<(std::ostream& os, const Human& obj)
+std::ostream& operator<<(std::ostream& os, const Human& obj) //выводит информацию на экран. 
 {
 	return obj.print(os);// .get_last_name();
+}
+std::ofstream& operator<<(std::ofstream& ofs, const Human& obj)
+{
+	return obj.print(ofs);
 }
 
 #define STUDENT_TAKE_PARAMETERS const std::string& speciality, const std::string& group, double rating, double attendance
@@ -188,6 +202,22 @@ void Print(Human* group[], const int n)
 		cout << delimiter << endl;
 	}
 }
+
+void Save(Human* group[], const int n, const std::string& filename)
+{
+	std::fstream fout(filename); // открыли поток
+	for (int i = 0; i < n; i++)
+	{
+		fout << *group[i] << endl; // пишем в тот поток который мы создали.
+		//fout << delimiter << endl;
+	}
+	fout.close();// закрываем поток
+	std::string cmd = "notepad "+ filename; // открываем файл
+	//std::string cmd = "start winword " + filename;
+	system(cmd.c_str()); // функция system(const char*) выполняет любую доступную команду операционной системы.
+	   // метод c_str() возвращает C-string(NULL Terminated Line), обвернутый в объект класса std::string.
+}
+ 
 void Clear(Human* group[], const int n)
 {
 	for (int i = 0; i < n; i++)
@@ -241,6 +271,7 @@ void main()
 	};
 	
 	Print(group, sizeof(group) / sizeof(group[0]));
+	Save(group, sizeof(group) / sizeof(group[0]),"group.txt");
 	Clear(group, sizeof(group) / sizeof(group[0]));
 	//cout << delimiter << endl;
 	//for (int i = 0; i <sizeof(group)/sizeof(group[0]); i++)
