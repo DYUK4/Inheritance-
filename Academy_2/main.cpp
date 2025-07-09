@@ -1,4 +1,4 @@
-#include<iostream>
+﻿#include<iostream>
 #include<fstream>
 #include<string>
 #include<string.h>
@@ -47,20 +47,20 @@ public:
 	{
 		cout << last_name << " " << first_name << " " << age << endl;
 	}*/
-	//virtual void print()const // ����� ���������� ����� ���������� ��� ���������� �� ������ �������� ������ �� � �������� �������.
+	//virtual void print()const // после добавления стала выводиться вся информация не только базового класса но и дочерних классов.
 	//{
 	//	cout << last_name << " " << first_name << " " << age << endl;
 	//}
-	virtual std::ostream& print(std::ostream& os)const //������ ������ ����������� � ������������ �� ������
+	virtual std::ostream& print(std::ostream& os)const //потоки всегда принимаются и возвращаются по ссылке
 	{
-		//os << strchr(typeid(*this).name(),' ')+1 << ":\t";// �������� typeid(type|value) ���������� ��� �������� �� ����� ���������� ���������
-		//  ����� name() ���������� c_str()���������� ��� ����. 
+		//os << strchr(typeid(*this).name(),' ')+1 << ":\t";// оператор typeid(type|value) определяет тип значения на этапе выполнения программы
+		//  метод name() возвращает c_str()содержащую имя типа. 
 		return os << last_name << " " << first_name << " " << age; 
 	}
 	virtual std::ofstream& print(std::ofstream& ofs)const
 	{
-		ofs.width(TYPE_WIDTH); // ����� width() ������ ������ ������.
-		ofs << std::left;// ���������� ������������ �� ������ ����
+		ofs.width(TYPE_WIDTH); // метод width() задает ширину вывода.
+		ofs << std::left;// возвращаем выравнивание по левому краю
 		ofs << std::string(strchr(typeid(*this).name(), ' ') + 1)+ ":";
 		ofs.width(LAST_NAME_WIDTH);
 		ofs << last_name;
@@ -70,7 +70,11 @@ public:
 		ofs << age;
 		return ofs;
 	}
-
+	virtual std::ifstream& read(std::ifstream& ifs)// читаем из файлика
+	{
+		ifs >> last_name >> first_name >> age;
+		return ifs;
+	}
 };
 std::ostream& operator<<(std::ostream& ost, const Human& obj)
 {
@@ -79,6 +83,10 @@ std::ostream& operator<<(std::ostream& ost, const Human& obj)
 std::ofstream& operator<< (std::ofstream& ofs, const Human& obj)
 {
 	return obj.print(ofs);
+}
+std::ifstream& operator>>(std::ifstream& ifs,Human& obj)
+{
+	return obj.read(ifs);
 }
 //==========================================================================
 //============================================================================
@@ -146,6 +154,12 @@ public:
 		ofs<< attendance;
 		return ofs;
 	}
+	std::ifstream& read(std::ifstream& ifs)override
+	{
+		Human::read(ifs);
+		ifs >> speciality >> group >> rating >> attendance;
+		return ifs;
+	}
 };
 
 
@@ -188,6 +202,18 @@ std::ofstream& print(std::ofstream& ofs)const override
 	ofs<< experience;
 	return ofs;
 }
+std::ifstream& read(std::ifstream& ifs) override
+{
+	Human::read(ifs);
+	char sz_speciality[SPECIALITY_WIDTH + 1]{}; //sz_String Ziro - строка заканчивающаяся нулем)
+	ifs.read(sz_speciality, SPECIALITY_WIDTH);
+	for (int i = SPECIALITY_WIDTH - 2; sz_speciality[i] == ' '; i--)sz_speciality[i] = 0;// убираем пробелы в конце 
+	while (sz_speciality[0] == ' ')
+		for (int i = 0; sz_speciality[i]; i++)sz_speciality[i] = sz_speciality[i + 1];//убтваем пробелы с переди забивая нулями.
+	speciality = sz_speciality;
+	ifs >> experience;
+	return ifs;
+}
 
 };
 
@@ -196,7 +222,7 @@ std::ofstream& print(std::ofstream& ofs)const override
 
 class Graduate :public Student
 {
-	static const int SUBJECT_WIDTH = 25;
+	static const int SUBJECT_WIDTH = 20;
 	std::string subject;
 public:
 	const std::string& get_subject() { return subject; }
@@ -230,8 +256,16 @@ public:
 		ofs<< subject;
 		return ofs;
 	}
+	std::ifstream& read(std::ifstream& ifs)override
+	{
+		Human::read(ifs);
+		std::getline(ifs, subject); // читает строку с пробелами
+		return ifs;
+	}
 
 };
+//====================================================================
+//=======================  Функции  =================================
 
 void Print(Human* group[], const int n)
 {
@@ -239,11 +273,15 @@ void Print(Human* group[], const int n)
 	for (int i = 0; i < n; i++)
 	{
 		//group[i]->print();
-		cout << *group[i] << endl;
-		cout << delimiter << endl;
+		if (group[i])
+		{
+			cout << *group[i] << endl;
+			cout << delimiter << endl;
+		}
 	}
+	cout << "Количество человек в группе:" << n << endl;
 }
-
+//=============== Save ============================================
 void Save(Human* group[], const int n, const std::string& filename)
 {
 	std::ofstream fout(filename);
@@ -255,9 +293,82 @@ void Save(Human* group[], const int n, const std::string& filename)
 	fout.close();
 	std::string cmd = "notepad " + filename;
 	//std::string cmd = "start word " + filename;
-	system(cmd.c_str()); // ������� system(const char*) ��������� ����� ��������� ������� ������������ ��������.
-// ����� c_str() ���������� C-string(NULL Terminated Line), ���������� � ������ ����� std::string. 
+	system(cmd.c_str()); // функция system(const char*) выполняет любую доступнкю команду операционной системой.
+// метод c_str() возвращает C-string(NULL Terminated Line), обвернутый в объект класс std::string. 
 }
+
+Human* HumanFactory(const std::string& type)
+{
+	Human* human = nullptr;
+	if (type == "Human:")human = new Human("", "", 0);
+	if (type == "Teacher:")human = new Teacher("","",0,"",0);
+	if (type == "Student:")human = new Student("", "", 0, "", "", 0, 0);
+	if (type == "Graduate:")human = new Graduate("", "", 0, "", "", 0, 0, "");
+	return human;
+}
+//=================== LOAD ___________======================
+bool NotAppropriateType(const std::string& buffer)
+{
+	// несоответствующий тип: 
+	return buffer.find("Human") == std::string::npos &&
+		buffer.find("Student") == std::string::npos &&
+		buffer.find("Teacher") == std::string::npos &&
+		buffer.find("Graduate") == std::string::npos;
+}
+Human** Load(const std::string& filename, int& n)
+{
+	Human** group = nullptr;
+	std::ifstream fin(filename);
+	if (fin.is_open())
+	{
+		// 1 вычисляем количество записей в файле. пока мы не начали читать файл размер файла равн НУЛЮ
+		n = 0;
+		while (!fin.eof())
+		{
+			std::string buffer;
+			//fin.getline(); // не перегружен для объкетов класса std::string
+			std::getline(fin, buffer); // читает все до конца строки
+			//if (buffer.size() == 0)continue; // проверяем стороку на наличие символов
+			if (NotAppropriateType(buffer)) continue;
+				/*buffer.find("Human") == std::string::npos &&
+				buffer.find("Student") == std::string::npos &&
+				buffer.find("Teacher") == std::string::npos &&
+				buffer.find("Graduate") == std::string::npos
+				) continue;*/
+			n++;
+
+		}
+		cout << "Количество записей в файле: " << n << endl;
+		//2  выделяем память для группы
+		group = new Human * [n] {};
+		//3 возвращаемся в начало файла для того что бы прочитать содержимое этого файла
+		cout << " Позиция курсора на чтение: " << fin.tellg() << endl;
+		fin.clear();// очистить поток
+		fin.seekg(0);// найти нулевую позицию
+		cout << " Позиция курсора на чтение: " << fin.tellg() << endl;
+		
+		// 4 читаем файл 
+		for (int i = 0;i<n; i++)
+		{
+			std::string type;
+			fin >> type;
+			if (NotAppropriateType(type))continue;
+			group[i] = HumanFactory(type);
+			if (group[i])fin >> *group[i];
+
+			/*std::string buffer;
+			std::getline(fin, buffer);*/
+
+		}
+		fin.close(); //  закрываем файл если он был открыт
+	}
+	else
+	{
+		std::cerr << "Error: File not found" << endl;
+	}
+	return group;
+}
+
 
 void Clear(Human* group[], const int n)
 {
@@ -273,7 +384,9 @@ void Clear(Human* group[], const int n)
 //==============================================================================
 
 //#define INHERITANCE_1
-//#define INHERITANCE_2 // ������ ������ �������� �������� ��� ������������
+//#define INHERITANCE_2 // второй способ создание объектов при наследовании
+//#define SAVE_CHECK
+#define LOAD_CHECK
 
 void main()
 {
@@ -313,13 +426,14 @@ void main()
 	graduate.print();
 	cout << delimiter << endl;
 #endif // INHERITANCE_2
+#ifdef SAVE_CHECK
 
 	/*cout << &Student::print << endl;
 	cout << &Teacher::print << endl;
 	cout << &Graduate::print << endl;*/
-	   
 
-	Human* group[] =  //��������� �� ������� ����� (Base-Class Pointer)
+
+	Human* group[] =  //Указатель на базовый класс (Base-Class Pointer)
 	{
 		new Student("Pinkman","Jessie",20,"Chenistry","WW_220",95,90),
 		new Teacher("White","Walter",50,"Chemistry",25),
@@ -328,10 +442,10 @@ void main()
 		new Teacher("Diaz","Ricardo",50,"Weapons distributin",20)
 	};
 	Print(group, sizeof(group) / sizeof(group[0]));
-	Save(group, sizeof(group) / sizeof(group[0]),"sroup.txt");
+	Save(group, sizeof(group) / sizeof(group[0]), "group.txt");
 	Clear(group, sizeof(group) / sizeof(group[0]));
 
-	//������� ������ �� �����
+	//Выводим массив на экран
 	//cout << delimiter << endl;
 	//for (int i = 0; i < sizeof(group) / sizeof(group[0]); i++)
 	//{
@@ -340,11 +454,22 @@ void main()
 	//	cout << delimiter << endl;
 	//}
 
-	//// �������� �������� new
+	//// удаление объектов new
 	//for (int i = 0; i < sizeof(group) / sizeof(group[0]); i++)
 	//{
 	//	delete group[i];
-	//}
+	//}  
+#endif // SAVE_CHECK
+
+#ifdef LOAD_CHECK
+	int n = 0;
+	Human** group = Load("group.txt", n);
+	Print(group, n);
+	Clear(group, n);
+
+
+#endif // LOAD_CHECK
+
 
 }
-// 22 2.11
+// 23 1:24min
