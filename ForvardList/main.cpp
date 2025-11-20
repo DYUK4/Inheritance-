@@ -33,6 +33,7 @@ class Iterator
 {
 	Element* Temp;
 public:
+	    //constructor
 	Iterator(Element* Temp = nullptr) :Temp(Temp)
 	{
 		cout << "ItConstructor:\t" << this << endl;
@@ -40,17 +41,20 @@ public:
 	~Iterator()
 	{
 		cout << "ItDestructor:\t" << this << endl;
-}
+    }
+	      // перегрузка операторов
+	            // ++ инкримент 
 	Iterator& operator++()
 	{
 		Temp = Temp->pNext;
 		return *this;
 	}
-
+	      // !=
 	bool operator!=(const Iterator& other)const
 	{
 		return this->Temp != other.Temp;
 	}
+	     //  * 
 	int operator*()
 	{
 		return Temp->Data;
@@ -66,7 +70,7 @@ class ForwardList // объединяет элементы в список
 	Element* Head;
 	unsigned int size;
 public:
-	Iterator begin()
+	Iterator begin() // метод begin для for
 	{
 		return Head;
 	}
@@ -85,11 +89,19 @@ public:
 	}
 	ForwardList(const std::initializer_list<int>il) :ForwardList()// преобразует initializerList в ForwardList
 	{
+		//initializer_list - это контейнер
+		//Контейнер - это обьект, который организует хранение других обьектов в памяти.
+		// У любого контейнера в обязательном порядке есть как минимум два мутода: begin() - возвращает итератор на начало контейнера.
+		// end() - возвращает итератор на конец контейнера.
 		cout << typeid(il.begin()).name() << endl;
+
 		for (int const* it = il.begin(); it != il.end(); it++)
 		{
 			push_back(*it);
 		}
+		//initializer_list - всякий раз неявно создается, когда мы перечисляем значения в фигурных скобках черех запятую {, ,}; 
+		// ForwardList list = {3,5,8,13,21}; - неявно создается обьект класса initializer_list 
+
 	}
 	ForwardList(const ForwardList& other):ForwardList() //конструктор копирования всегда принимает константную ссылку на объект.!!!
 	{
