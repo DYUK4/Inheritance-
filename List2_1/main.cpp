@@ -23,11 +23,17 @@ template<typename T>class List
 		Element(T Data, Element* pNext = nullptr, Element* pPrev = nullptr)
 			:Data(Data), pNext(pNext), pPrev(pPrev)
 		{
+#ifdef DEBUG
 			cout << "EConstructor:\t" << this << endl;
+#endif // DEBUG
+
 		}
 		~Element()
 		{
+#ifdef DEBUG
+
 			cout << "EDistructor:\t" << this << endl;
+#endif // DEBUG
 		}
 		friend class List;
 	}*Head,*Tail;
@@ -41,7 +47,7 @@ template<typename T>class List
 	public:
 		ConstBaseIterator(Element* Temp = nullptr) :Temp(Temp) {}
 		~ConstBaseIterator() {}
-		// Comparison operators:
+		        // Comparison operators:
 		bool operator == (const ConstBaseIterator& other)const
 		{
 			return this->Temp == other.Temp;
@@ -69,11 +75,16 @@ public:
 	public:
 		ConstIterator(Element* Temp = nullptr) : ConstBaseIterator(Temp)
 		{
+#ifdef DEBUG
 			cout << "ItConstructor:\t" << this << endl;
+#endif // DEBUG
+
 		}
 		~ConstIterator()
 		{
+#ifdef DEBUG
 			cout << "ItDestructor:\t" << this << endl;
+#endif // DEBUG
 		}
 		ConstIterator& operator++() // Prefix increment перугрузка оператора ++ в классе Iterator
 		{
@@ -123,11 +134,16 @@ public:
 	public:
 		ConstReverseIterator(Element* Temp = nullptr) :ConstBaseIterator(Temp)
 		{
+#ifdef DEBUG
 			cout << "RItConstructor:\t" << this << endl;
+#endif // DEBUG
+
 		}
 		~ConstReverseIterator()
 		{
+#ifdef DEBUG
 			cout << "RIDistructor:\t" << this << endl;
+#endif // DEBUG
 		}
 		         //Incremento/Decremento:
 		ConstReverseIterator& operator ++()
@@ -232,7 +248,10 @@ public:
 	{
 		Head = Tail = nullptr;
 		size = 0;
+#ifdef DEBUG
 		cout << "LConstructor:\t" << this << endl;
+#endif // DEBUG
+
 	}
 	List(const std::initializer_list<T>& il) :List()
 	{
@@ -243,12 +262,17 @@ public:
 	List(const List<T>& other) :List()
 	{
 		*this = other;
+#ifdef DEBUG
 		cout << "CopyConstructor:" << this << endl;
+#endif // DEBUG
+
 	}
 	~List()
 	{
 		while (Head)pop_front();
+#ifdef DEBUG
 		cout << "LDistructor:\t" << this << endl;
+#endif // DEBUG
 	}
 	           // Operators:
 	List<T>& operator=(const List<T>& other)
@@ -256,7 +280,10 @@ public:
 		if (this == &other)return *this;
 		while (Head)pop_front();
 		for (Element* Temp = other.Head; Temp; Temp = Temp->pNext)push_back(Temp->Data);
+#ifdef DEBUG
 		cout << "CopyAssignment:\t" << this << endl;
+#endif // DEBUG
+
 		return *this;
 	}
 	           //Adding elements:
@@ -511,7 +538,15 @@ void main()
 	Grow(list3);
 	for (int i : list3)cout << i << tab; cout << endl;
 
+	List<std::string>s_list = { "Хорошо","живет","на","свете","Винни","Пух" };
+	for (std::string i : s_list)cout << i << tab; cout << endl;
 
+	List<double>d_list = { 2.7,3.14,5.4,8.3 };
+	for (double i : d_list)cout << i << tab; cout << endl;
+	d_list.print();
+
+	List<std::string>b_list = { "Хорошо","Живет","на","свете","ноут","бук" };
+	for (std::string i : b_list)cout << i << tab; cout << endl;
 }
 
     //вид 34 ООП
@@ -543,3 +578,5 @@ void main()
 // typenem - создание шаблонного тип данных
 // T - имя шаблонного типа
 //     Если внутри шаблонного класса созданы другие классы то они являются не шаблонными а обычными классами, но любую переменную член и любой метод такого вложенного класса можно сделать шаблонными 
+
+// 39 видео 15 min
