@@ -10,6 +10,19 @@ using std::endl;
 #define tab "\t"
 #define delimiter "\n_____________________________________________________\n"
 
+//Class -  обычный класс;
+//Class<type> - шаблонный класс;
+//Class<T> ......
+//Class<double> .......
+
+
+
+// #########################################################################
+//############## Объявления класса (class declaration) #####################
+
+//template - показывает создание шаблона.
+//typename - создает шаблонный тип данных
+//T - имя шаблонного типа.
 
 template<typename T>class List
 {
@@ -45,69 +58,30 @@ template<typename T>class List
 	protected:
 		Element* Temp;
 	public:
-		ConstBaseIterator(Element* Temp = nullptr) :Temp(Temp) {}
-		~ConstBaseIterator() {}
+		ConstBaseIterator(Element* Temp = nullptr);
+		~ConstBaseIterator();
 		        // Comparison operators:
-		bool operator == (const ConstBaseIterator& other)const
-		{
-			return this->Temp == other.Temp;
-		}
-		bool operator != (const ConstBaseIterator& other)const
-		{
-			return this->Temp != other.Temp;
-		}
+		bool operator == (const ConstBaseIterator& other)const;
+		bool operator != (const ConstBaseIterator& other)const;
 
 		           // DeReference operator
-		const T& operator*()const
-		{
-			return Temp->Data;
-		}
+		const T& operator*()const;
          	
 
 
     };
  	                 // Constructor
 public:
-
 //========================================================================================
 	class ConstIterator:public ConstBaseIterator // прямой итератор в одну сторону ->
 	{
 	public:
-		ConstIterator(Element* Temp = nullptr) : ConstBaseIterator(Temp)
-		{
-#ifdef DEBUG
-			cout << "ItConstructor:\t" << this << endl;
-#endif // DEBUG
-
-		}
-		~ConstIterator()
-		{
-#ifdef DEBUG
-			cout << "ItDestructor:\t" << this << endl;
-#endif // DEBUG
-		}
-		ConstIterator& operator++() // Prefix increment перугрузка оператора ++ в классе Iterator
-		{
-			ConstBaseIterator::Temp = ConstBaseIterator::Temp->pNext;
-			return *this;
-		}
-		ConstIterator operator++(int) //Postfix increment
-		{
-			ConstIterator old = *this;
-			ConstBaseIterator::Temp = ConstBaseIterator::Temp->pNext;
-			return old;
-		}
-		ConstIterator& operator--() // Prefix increment
-		{
-			ConstBaseIterator::Temp = ConstBaseIterator::Temp->pPrev;
-			return *this;
-		}
-		ConstIterator operator --(int) //Postfix increment
-		{
-			ConstIterator old = *this;
-			ConstBaseIterator::Temp = ConstBaseIterator::Temp->pPrev;
-			return old;
-		}
+		ConstIterator(Element* Temp = nullptr);
+		~ConstIterator();
+		ConstIterator& operator++();
+		ConstIterator operator++(int);
+		ConstIterator& operator--();
+		ConstIterator operator --(int);
 		/*          // Comparison operators:
 		bool operator == (const ConstIterator& other)const Перенесено в ConstBaseInterator как посторяемую часть кода
 		{
@@ -132,60 +106,13 @@ public:
 	{
 		//Element* Temp;
 	public:
-		ConstReverseIterator(Element* Temp = nullptr) :ConstBaseIterator(Temp)
-		{
-#ifdef DEBUG
-			cout << "RItConstructor:\t" << this << endl;
-#endif // DEBUG
-
-		}
-		~ConstReverseIterator()
-		{
-#ifdef DEBUG
-			cout << "RIDistructor:\t" << this << endl;
-#endif // DEBUG
-		}
+		ConstReverseIterator(Element* Temp = nullptr);
+		~ConstReverseIterator();
 		         //Incremento/Decremento:
-		ConstReverseIterator& operator ++()
-		{
-			ConstBaseIterator::Temp = ConstBaseIterator::Temp->pPrev;
-			return *this;
-		}
-		ConstReverseIterator operator++(int)
-		{
-			ConstReverseIterator old = *this;
-			ConstBaseIterator::Temp = ConstBaseIterator::Temp->pPrev;
-			return old;
-		}
-		ConstReverseIterator& operator--()
-		{
-			ConstBaseIterator::Temp = ConstBaseIterator::Temp->pNext;
-			return *this;
-		}
-		ConstReverseIterator operator --(int)
-		{
-			ConstReverseIterator old = *this;
-			ConstBaseIterator::Temp = ConstBaseIterator::Temp->pNext;
-			return old;
-		}
-		//         //Comperison operators:
-		//bool operator ==(const ConstReverseIterator& other)const
-		//{
-		//	return this->Temp == other.Temp;
-		//}
-		//bool operator != (const ConstReverseIterator& other)const
-		//{
-		//	return this->Temp != other.Temp;
-		//}
-		//Dereference operators;
-		/*const int& operator*()const
-		{
-			return Temp->Data;
-		}*/
-		/*int& operator *()
-		{
-			return Temp->Data;
-		}*/
+		ConstReverseIterator& operator ++();
+		ConstReverseIterator operator++(int);
+		ConstReverseIterator& operator--();
+		ConstReverseIterator operator --(int);
 	};
 //========================================================================================
 	class Iterator : public ConstIterator
@@ -242,13 +169,127 @@ public:
 	void reverse_print()const;
 };
 
+//############## Конец Объявление класса (Class declaration end)    #########
+// #########################################################################
 
 
+//#############################################################################
+// ###############   Определение класса (class definition) #######################################
+// 
+// 
+// 
+// 
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////        constBaseIterator      //////////////////////////////////////////////////
+template<typename T>List<T>::ConstBaseIterator::ConstBaseIterator(Element* Temp) :Temp(Temp) {}
+template<typename T>List<T>::ConstBaseIterator::~ConstBaseIterator() {}
+// Comparison operators:
+template<typename T>bool List<T>::ConstBaseIterator:: operator == (const ConstBaseIterator& other)const
+{
+	return this->Temp == other.Temp;
+}
+template<typename T>bool List<T>::ConstBaseIterator::operator != (const ConstBaseIterator& other)const
+{
+	return this->Temp != other.Temp;
+}
 
+// DeReference operator
+template<typename T> const T& List<T>::ConstBaseIterator:: operator*()const
+{
+	return Temp->Data;
+}
+
+/////////////////         constBaseIterator      //////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////         const Iterators      //////////////////////////////////////////////////
+
+template<typename T> List<T>::ConstIterator::ConstIterator(Element* Temp) : ConstBaseIterator(Temp)
+{
+#ifdef DEBUG
+	cout << "ItConstructor:\t" << this << endl;
+#endif // DEBUG
+
+}
+template<typename T>List<T>::ConstIterator::~ConstIterator()
+{
+#ifdef DEBUG
+	cout << "ItDestructor:\t" << this << endl;
+#endif // DEBUG
+}
+template<typename T>typename List<T>::ConstIterator& List<T>::ConstIterator::operator++() // Prefix increment перугрузка оператора ++ в классе Iterator
+{
+	ConstBaseIterator::Temp = ConstBaseIterator::Temp->pNext;
+	return *this;
+}
+template<typename T>typename List<T>::ConstIterator List<T>::ConstIterator::operator++(int) //Postfix increment
+{
+	ConstIterator old = *this;
+	ConstBaseIterator::Temp = ConstBaseIterator::Temp->pNext;
+	return old;
+}
+template<typename T>typename List<T>::ConstIterator& List<T>::ConstIterator::operator--() // Prefix increment
+{
+	ConstBaseIterator::Temp = ConstBaseIterator::Temp->pPrev;
+	return *this;
+}
+template<typename T> typename List<T>::ConstIterator List<T>::ConstIterator::operator --(int) //Postfix increment
+{
+	ConstIterator old = *this;
+	ConstBaseIterator::Temp = ConstBaseIterator::Temp->pPrev;
+	return old;
+}
+
+/////////////////         const Iterators      //////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////         const ReversIterator     //////////////////////////////////////////////////
+
+template<typename T> List<T>::ConstReverseIterator::ConstReverseIterator(Element* Temp) :ConstBaseIterator(Temp)
+{
+#ifdef DEBUG
+	cout << "RItConstructor:\t" << this << endl;
+#endif // DEBUG
+
+}
+template<typename T>List<T>::ConstReverseIterator::~ConstReverseIterator()
+{
+#ifdef DEBUG
+	cout << "RIDistructor:\t" << this << endl;
+#endif // DEBUG
+}
+//Incremento/Decremento:
+template<typename T>typename List<T>::ConstReverseIterator& List<T>::ConstReverseIterator::operator ++()
+{
+	ConstBaseIterator::Temp = ConstBaseIterator::Temp->pPrev;
+	return *this;
+}
+template<typename T>typename List<T>::ConstReverseIterator List<T>::ConstReverseIterator::operator++(int)
+{
+	ConstReverseIterator old = *this;
+	ConstBaseIterator::Temp = ConstBaseIterator::Temp->pPrev;
+	return old;
+}
+template<typename T>typename List<T>::ConstReverseIterator& List<T>::ConstReverseIterator::operator--()
+{
+	ConstBaseIterator::Temp = ConstBaseIterator::Temp->pNext;
+	return *this;
+}
+template<typename T>typename List<T>::ConstReverseIterator List<T>::ConstReverseIterator::operator --(int)
+{
+	ConstReverseIterator old = *this;
+	ConstBaseIterator::Temp = ConstBaseIterator::Temp->pNext;
+	return old;
+}
+
+/////////////////         const ReversIterator     //////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////    List members    ///////////////////////////////////////////
-template<typename T>typename List <T>::ConstIterator List<T>:: begin()const
+template<typename T>typename List<T>::ConstIterator List<T>:: begin()const
 {
 	return Head;
 }
@@ -514,6 +555,8 @@ template<typename T>void Grow(List<T>& list)
 		*it *= 10;
 }
 
+// ##### Конец определения класса (Class definition end) #########################
+//###################################################################################
 
 //========================================================================================
 
@@ -621,3 +664,12 @@ void main()
 //     Если внутри шаблонного класса созданы другие классы то они являются не шаблонными а обычными классами, но любую переменную член и любой метод такого вложенного класса можно сделать шаблонными 
 
 // 39 видео 15 min
+// 40 ёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёё
+// constIterator = конструктор
+
+//Параметры по умолчанию могут быть только в прототипах функций (ConstIterator(Element* Temp = nullptr))ConstIterator(Element* Temp)
+//
+//
+// 41 video 1.28
+
+
