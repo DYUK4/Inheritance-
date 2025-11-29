@@ -23,7 +23,7 @@ public:
 	}
 	friend class ForwardList;
 	friend class Iterator;
-
+	friend class Stack;
 };
 int Element::count = 0;
 
@@ -66,7 +66,7 @@ public:
 
 class ForwardList // объединяет элементы в список
   {
-	 
+  protected:
 	Element* Head;
 	unsigned int size;
 public:
@@ -257,6 +257,66 @@ public:
 		//cout << "Общее количество элементов списка: " << Head->count << endl;
 	}
 };
+
+class Stack : ForwardList
+{
+
+
+
+public:
+	const int& top()const
+	{
+		return Head->Data;
+
+	}
+
+	int& top()//позволяет изменить вершину стека 
+	{
+		return Head->Data;
+	}
+
+	int push(int Data)
+	{
+		push_front(Data);
+		return Head->Data;
+	}
+
+	int pop()// это единственным метод позволяет прочитать вершину стека, при четнии вершина стека удаляется.
+	{
+		int Data = Head->Data;
+		pop_front();
+		return Data;
+	}
+
+	int size()const 
+	{
+		return ForwardList::size;
+	}
+
+	bool empty()const // он не будет изменять состояние объекта
+	{
+		return Head == nullptr; // если Head равен nullptr то стек пустой 
+	}
+	void swap(Stack& other) //https://legacy.cplusplus.com/reference/stack/stack/
+	{
+		Element* bufferHead = this->Head;
+		this->Head = other.Head;
+		other.Head = bufferHead;
+
+		int bufferSize = this->size();
+		this->ForwardList::size = other.size();
+		other.ForwardList::size = bufferSize;
+	}
+	void info()const // чтобы видеть содержимое стека
+	{
+		cout << "\n----------------------------------------------------\n";
+		cout << this << ":\n";
+		cout << "Size: " << size() << endl;
+		for (int i : ForwardList(*this)) cout << i << tab; cout << endl;
+		cout << "\n----------------------------------------------------\n";
+	}
+};
+
 void Print(int arr[])
 {
 	cout << typeid(arr).name() << endl;
@@ -267,18 +327,15 @@ void Print(int arr[])
 	}
 	cout << endl;
 }
-
-
 //==================================================================
 //#define BASE_CHECK
 //#define COUNT_CHECK
 //#define PERFORMANCE_CHECK
 //#define RANGE_BASED_FOR_ARRAY
-#define RANGE_BASED_FOR_LIST
+//#define RANGE_BASED_FOR_LIST
 	void main()
 	{
 		setlocale(LC_ALL, "");
-
 #ifdef BASE_CHECK
 		//Element element(5);
 		int n;
@@ -309,7 +366,6 @@ void Print(int arr[])
 		list.erase(index);
 		list.print();
 #endif // BASE_CHECK
-
 #ifdef COUNT_CHECK
 		ForwardList list1;
 		list1.push_back(3);
@@ -325,8 +381,6 @@ void Print(int arr[])
 		list2.push_back(80);
 		list2.print();
 #endif // COUNT_CHECK
-
-
 #ifdef PERFORMANCE_CHECK
 		int n;
 		cout << "Введите количество элементов: "; cin >> n;
@@ -348,7 +402,6 @@ void Print(int arr[])
 		cout << "Copy Done" << endl;
 
 #endif // PERFORMANCE_CHECK
-
 #ifdef RANGE_BASED_FOR_ARRAY
 		int arr[] = { 3,5,8,13,21 };
 		for (int i = 0; i < sizeof(arr) / sizeof(arr[0]); i++)
@@ -367,7 +420,6 @@ void Print(int arr[])
 		cout << endl;
 		Print(arr);
 #endif // RANGE_BASED_FOR_ARRAY
-
 #ifdef RANGE_BASED_FOR_LIST
 		ForwardList list = { 3,5,8,13,21 };
 		//list.print();
@@ -378,5 +430,48 @@ void Print(int arr[])
 		cout << endl;
 #endif // RANGE_BASED_FOR_LIST
 
+		Stack stack;
+		stack.push(3);
+		stack.push(5);
+		stack.push(8);
+		stack.push(13);
+		stack.push(21);
+		cout << stack.size() << endl;
+		stack.info();
+		//while (!stack.empty())// пока стек не пустой 
+		//{
+		//	cout << stack.pop() << tab; 
+		//}
+		//cout << endl;
+
+		Stack stack2;
+		stack2.push(34);
+		stack2.push(55);
+		stack2.push(89);
+		
+		stack.info();
+		stack2.info();
+
+		stack.swap(stack2);
+
+		stack.info();
+		stack2.info();
+
 	}
 	
+
+	 // Видео 43
+	// stack - это модель памяти, из которой последний записанныей элемент считываеся первым. 
+	// stack - поддерживает всего две операции: 
+	//                                         push(); встывить. Помещает элемент на вершину стека.
+	//                                         pop(); вытащить. Убирает элемент с вершины стека.
+	// Вершина стека(Stack Top) - это последний элемент попавший с стек.(стопка тарелок, магазин м патронами последний заряженый патрон выстрелит первым то что последнее засунули это вершина)
+	// Кроме вершины, у стека так же есть дно(Stack Bottom), на котором находится первый элемент, попавший с стек. Количество элементов в стеке называют его высотой.
+	// В отличии от вершины stack, дно стека ни как не указано это просто первый добавленный элемент.
+	//   В отличии от вершины стека, дно стека ни как не обозначено это просто первый добавленный элемент.
+	// ----------------------
+	// 
+	//
+	//
+	//
+
